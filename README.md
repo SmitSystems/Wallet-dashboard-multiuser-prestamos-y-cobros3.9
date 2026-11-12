@@ -1,6 +1,6 @@
 # Préstamos y Cobros
 
-Aplicación web para controlar una cartera de préstamos: clientes, intereses, cuotas, pagos, capital disponible y recordatorios. Funciona sin servidor: todo se guarda en el navegador del dispositivo.
+Aplicación web para controlar una cartera de préstamos: clientes, intereses, cuotas, pagos, capital disponible y recordatorios. Tu cartera se guarda en el navegador del dispositivo del administrador. Desde la 3.19 puede haber cuentas de cobradores en la nube (Firebase), que solo envían clientes y propuestas de préstamo.
 
 ## Funciones
 
@@ -26,6 +26,7 @@ Aplicación web para controlar una cartera de préstamos: clientes, intereses, c
 - Interruptor remoto `estado.json` (ver abajo).
 - Contraseña con código de recuperación de 4 a 6 dígitos.
 - Temas claro, oscuro o automático, con varios colores y fondos.
+- Cuentas (3.19): el administrador ve en «Actividad» cada cliente o préstamo que registra un cobrador y lo aprueba o rechaza; en «Cuentas» crea cobradores, los desactiva y les envía el restablecimiento de contraseña. El cobrador solo ve «Clientes» y «Mis envíos».
 
 ## Cómo usarla
 
@@ -42,6 +43,7 @@ manifest.webmanifest    Datos para instalarla como app
 sw.js                   Funcionamiento sin conexión y actualizaciones con aviso
 favicon.ico             Icono de la pestaña
 estado.json             Interruptor remoto (activa: true / false)
+firestore.rules         Reglas de seguridad de Firestore (se pegan en la consola de Firebase; no se publica en GitHub)
 icon-*.png              Icono de la app (32 a 2048 px, PNG transparente), maskable y apple-touch
 screenshot-*.png        Capturas para el diálogo de instalación
 ```
@@ -71,6 +73,18 @@ screenshot-*.png        Capturas para el diálogo de instalación
 - 3.17: la aprobación del préstamo (imagen y mensaje de WhatsApp) ya no muestra el interés ni el «Total a pagar»; el cliente solo ve valor aprobado, cuotas, valor de cada cuota y fechas de pago. **No volver a agregar esas filas en `approval()`.** El resumen interno del préstamo no cambia. No cambia el esquema de datos (`VER` 4).
 
 - 3.18: nuevo diseño tipo dashboard: menú lateral con iconos en escritorio y barra inferior en el móvil; tema claro con fondo blanco y tema oscuro casi negro (`--bg`, `--soft`, `--card`, `--line`). Solo cambia el aspecto (HTML/CSS y la función `nav()`); no se toca la lógica ni los datos. No cambia el esquema de datos (`VER` 4): los datos existentes se conservan.
+
+- 3.19: cuentas de administrador y cobradores con Firebase (Authentication por correo + Firestore). Pestañas nuevas: «Actividad» y «Cuentas» (administrador) y «Clientes» y «Mis envíos» (cobrador). Cada cliente nuevo o propuesta de préstamo del cobrador queda como solicitud pendiente en la nube; al aprobarla, el administrador la trae a su cartera local (el préstamo recibe su código P-001… y se abre su aprobación para compartir, y empieza el día de la aprobación). Campos nuevos opcionales: `por` y `porTs` en clientes y préstamos, y `S.appr` (solicitudes ya aplicadas, evita duplicados). Un dispositivo sin datos pregunta una sola vez «Soy el administrador / Soy cobrador»; los dispositivos con datos son administrador. Se conserva todo lo de 3.6 a 3.18. No cambia el esquema de datos (`VER` 4).
+
+## Cuentas en la nube (Firebase)
+
+- Proyecto: `walletdashbmultuserprestamos` (plan Spark). La configuración web está en `index.html` (`FBC`) y es pública; la seguridad la dan las reglas de `firestore.rules`.
+- El administrador es el UID fijado en `ADMIN_UID` (index.html) y en las reglas. Si cambias de administrador, cámbialo en ambos sitios.
+- Colecciones: `users/{uid}` (nombre, email, activo, rol) y `solicitudes/{id}` (tipo `cliente` o `prestamo`, estado `pendiente` / `aprobada` / `rechazada`, por, porNombre, ts, datos).
+- Solo viven en la nube las cuentas y las solicitudes. Préstamos, pagos, capital y respaldos siguen en el dispositivo del administrador; haz tu respaldo desde Reportes como siempre.
+- Las solicitudes guardan datos personales de clientes (nombre, teléfono, documento, dirección): trátalos conforme a la ley de protección de datos de tu país y borra de Firebase lo que ya no necesites.
+- Dominios autorizados en Firebase > Authentication > Configuración: `smitsystems.github.io`.
+- Crear un cobrador desde «Cuentas» no cierra tu sesión. Una cuenta desactivada no puede entrar ni enviar solicitudes.
 
 ## Interruptor remoto (estado.json)
 

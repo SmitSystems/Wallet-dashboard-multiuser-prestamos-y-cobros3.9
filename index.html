@@ -107,6 +107,13 @@ nav#nav button.on{color:var(--acc);background:color-mix(in srgb,var(--acc) 13%,t
  main{padding-bottom:100px}
  .ib{bottom:calc(86px + env(safe-area-inset-bottom,0px))}
 }
+
+/* v3.19 · cuentas: insignia, aviso y barra con 8 pestañas */
+nav#nav button{position:relative}
+.bdg{background:var(--bad);color:#fff;border-radius:999px;font:700 .68rem/1 Figtree,system-ui,sans-serif;padding:3px 7px;font-style:normal;position:absolute;top:2px;right:calc(50% - 26px)}
+.toast{position:fixed;top:calc(12px + env(safe-area-inset-top,0px));left:12px;right:12px;z-index:130;max-width:480px;margin:0 auto;padding:12px 14px;border-radius:14px;background:var(--card);border:2px solid var(--acc2);box-shadow:0 10px 30px rgba(0,0,0,.3);font-weight:700;font-size:.92rem}
+@media(min-width:900px){.bdg{position:static;margin-left:auto}.toast{left:252px}}
+@media(max-width:899px){nav#nav.n8 button{padding:7px 1px}nav#nav.n8 button span{font-size:.58rem}nav#nav.n8 button span[data-s]{font-size:0}nav#nav.n8 button span[data-s]::before{font-size:.58rem}nav#nav.n8 button svg{width:22px;height:22px}}
 body.locked #side{display:none}
 </style>
 <link rel="manifest" href="manifest.webmanifest?v=11">
@@ -133,7 +140,7 @@ const fmt=n=>'$'+Math.round(n).toLocaleString('es-CO');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const today=()=>{const d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
 const DAYS={d:1,s:7,q:15,m:30},FN={d:'Diaria',s:'Semanal',q:'Quincenal',m:'Mensual'};
-const APPV='3.18',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
+const APPV='3.19',VER=4,MIG={3:r=>{let n=0;r.loans.forEach(l=>{if(!l.code)l.code='P-'+String(++n).padStart(3,'0')})}};/* migraciones futuras: MIG[n]=s=>{...} convierte datos de la versión n a n+1 sin perder nada */
 function migrate(r){r=r||{};r.clients=r.clients||[];r.loans=r.loans||[];r.pays=r.pays||[];r.cap=r.cap||[];r.cfg=Object.assign({theme:'auto',accent:'verde',bg:'liso',notif:false},r.cfg||{});let v=r.v||1;while(v<VER){(MIG[v]||(()=>{}))(r);v++}r.v=VER;return r}
 let S=migrate();
 const newCode=()=>'P-'+String(Math.max(0,...S.loans.map(l=>+String(l.code||'').replace(/\D/g,'')||0))+1).padStart(3,'0');
@@ -288,10 +295,10 @@ function enableNotif(){if(!('Notification'in window)){alert('Tu navegador no adm
 const startAlerts=()=>{notify();setInterval(notify,18e5)};
 const cname=id=>(S.clients.find(c=>c.id===id)||{nombre:'(eliminado)'}).nombre;
 
-const NAVI={"panel": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"9\" rx=\"1.6\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"5\" rx=\"1.6\"/><rect x=\"14\" y=\"12\" width=\"7\" height=\"9\" rx=\"1.6\"/><rect x=\"3\" y=\"16\" width=\"7\" height=\"5\" rx=\"1.6\"/>", "clientes": "<circle cx=\"9\" cy=\"8\" r=\"4\"/><path d=\"M2 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1\"/><path d=\"M19 8v6M16 11h6\"/>", "prestamos": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2.2\"/><circle cx=\"12\" cy=\"12\" r=\"2.6\"/><path d=\"M6 12h.01M18 12h.01\"/>", "capital": "<path d=\"M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10\"/><path d=\"M2 10l10-6 10 6z\"/>", "reportes": "<path d=\"M3 3v18h18\"/><path d=\"M8 16v-5M13 16V7M18 16v-8\"/>", "ajustes": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z\"/>"};
-function nav(){$('#nav').innerHTML=TABS.map(t=>`<button type="button" class="${tab===t[0]?'on':''}" data-t="${t[0]}" title="${t[1]}"${tab===t[0]?' aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true">${NAVI[t[0]]}</svg><span${t[0]==='clientes'?' data-s="Clientes"':''}>${t[1]}</span></button>`).join('');
+const NAVI={"actividad": "<path d=\"M22 12h-6l-2 3h-4l-2-3H2\"/><path d=\"M5.5 5.1 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.5-6.9A2 2 0 0 0 16.7 4H7.3a2 2 0 0 0-1.8 1.1z\"/>", "cuentas": "<circle cx=\"9\" cy=\"8\" r=\"3.5\"/><path d=\"M2.5 20v-1a5.5 5.5 0 0 1 5.5-5.5h2a5.5 5.5 0 0 1 5.5 5.5v1\"/><circle cx=\"17\" cy=\"9\" r=\"2.5\"/><path d=\"M17 14a4.5 4.5 0 0 1 4.5 4.5V20\"/>", "cclientes": "<circle cx=\"9\" cy=\"8\" r=\"4\"/><path d=\"M2 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1\"/><path d=\"M19 8v6M16 11h6\"/>", "envios": "<path d=\"M22 2 11 13\"/><path d=\"M22 2 15 22l-4-9-9-4z\"/>", "panel": "<rect x=\"3\" y=\"3\" width=\"7\" height=\"9\" rx=\"1.6\"/><rect x=\"14\" y=\"3\" width=\"7\" height=\"5\" rx=\"1.6\"/><rect x=\"14\" y=\"12\" width=\"7\" height=\"9\" rx=\"1.6\"/><rect x=\"3\" y=\"16\" width=\"7\" height=\"5\" rx=\"1.6\"/>", "clientes": "<circle cx=\"9\" cy=\"8\" r=\"4\"/><path d=\"M2 21v-1a6 6 0 0 1 6-6h2a6 6 0 0 1 6 6v1\"/><path d=\"M19 8v6M16 11h6\"/>", "prestamos": "<rect x=\"2\" y=\"6\" width=\"20\" height=\"12\" rx=\"2.2\"/><circle cx=\"12\" cy=\"12\" r=\"2.6\"/><path d=\"M6 12h.01M18 12h.01\"/>", "capital": "<path d=\"M3 21h18M5 21V10M9.5 21V10M14.5 21V10M19 21V10\"/><path d=\"M2 10l10-6 10 6z\"/>", "reportes": "<path d=\"M3 3v18h18\"/><path d=\"M8 16v-5M13 16V7M18 16v-8\"/>", "ajustes": "<circle cx=\"12\" cy=\"12\" r=\"3\"/><path d=\"M19.4 15a1.7 1.7 0 0 0 .3 1.9l.1.1a2 2 0 1 1-2.8 2.8l-.1-.1a1.7 1.7 0 0 0-1.9-.3 1.7 1.7 0 0 0-1 1.5V21a2 2 0 1 1-4 0v-.1a1.7 1.7 0 0 0-1.1-1.5 1.7 1.7 0 0 0-1.9.3l-.1.1a2 2 0 1 1-2.8-2.8l.1-.1a1.7 1.7 0 0 0 .3-1.9 1.7 1.7 0 0 0-1.5-1H3a2 2 0 1 1 0-4h.1a1.7 1.7 0 0 0 1.5-1.1 1.7 1.7 0 0 0-.3-1.9l-.1-.1a2 2 0 1 1 2.8-2.8l.1.1a1.7 1.7 0 0 0 1.9.3H9a1.7 1.7 0 0 0 1-1.5V3a2 2 0 1 1 4 0v.1a1.7 1.7 0 0 0 1 1.5 1.7 1.7 0 0 0 1.9-.3l.1-.1a2 2 0 1 1 2.8 2.8l-.1.1a1.7 1.7 0 0 0-.3 1.9V9a1.7 1.7 0 0 0 1.5 1H21a2 2 0 1 1 0 4h-.1a1.7 1.7 0 0 0-1.5 1z\"/>"};
+function nav(){const tn=tabsNow();$('#nav').classList.toggle('n8',tn.length>6);$('#nav').innerHTML=tn.map(t=>`<button type="button" class="${tab===t[0]?'on':''}" data-t="${t[0]}" title="${t[1]}"${tab===t[0]?' aria-current="page"':''}><svg viewBox="0 0 24 24" aria-hidden="true">${NAVI[t[0]]}</svg><span${t[0]==='clientes'?' data-s="Clientes"':''}>${t[1]}</span>${t[0]==='actividad'&&pendN()?'<i class="bdg">'+pendN()+'</i>':''}</button>`).join('');
   document.querySelectorAll('#nav button').forEach(b=>b.onclick=()=>{tab=b.dataset.t;render()})}
-function render(){nav();({panel,clientes,prestamos,capital,reportes,ajustes})[tab]()}
+function render(){const ok=tabsNow().map(t=>t[0]);if(!ok.includes(tab))tab=ok[0];nav();({panel,clientes,prestamos,capital,reportes,ajustes,actividad,cuentas,cclientes,envios})[tab]()}
 
 function panel(){
   const L=S.loans.map(l=>({l,s:sched(l)}));
@@ -307,7 +314,7 @@ function panel(){
   <div class="card stat"><b>${fmt(saldo)}</b><span>Saldo pendiente</span></div>
   <div class="card stat"><b>${fmt(gan)}</b><span>Intereses ganados</span></div>
   <div class="card stat bad"><b>${m.length}</b><span>Préstamos en mora</span></div><div class="card stat"><b>${L.filter(x=>x.s.st==='pagado').length}</b><span>Préstamos finalizados</span></div><div class="card stat"><b>${allSt().filter(e=>e.st==='dia'||e.st==='por').length}</b><span>Clientes al día</span></div>${S.cap.length?`<div class="card stat"><b>${fmt(capStats().caja)}</b><span>Disponible en caja</span></div>`:''}</div>
-  ${lateHtml}${tomHtml}${oppHtml()}${ntBtn}${installHtml(false)}
+  ${lateHtml}${tomHtml}${pendHtml()}${oppHtml()}${ntBtn}${installHtml(false)}
   ${oldBk?'<div class="card note">Hace más de 7 días que no haces un respaldo. Ve a Reportes y pulsa Exportar respaldo.</div>':''}
   <div class="card"><label>Nombre de tu negocio o tu nombre (aparece en los recibos)<input id="biz" value="${esc(S.biz||'')}" placeholder="Ej: Préstamos Don Carlos"></label></div>
   <div class="card"><h2>Cobros vencidos</h2>${m.length?m.map(x=>`<div class="row"><div>${esc(cname(x.l.client))}<small>Vencido: ${fmt(x.s.overdue)} · Mora estimada: ${fmt(x.s.mora)}</small></div><span>${waA(x.l.client,'Hola '+cname(x.l.client)+', le recordamos que tiene un pago vencido de '+fmt(x.s.overdue)+'. Por favor comuníquese para ponerse al día.',x.l)} <a class="lk" data-open="${x.l.id}">Ver préstamo</a></span></div>`).join(''):'<p class="empty">No tienes cuotas vencidas.</p>'}</div>
@@ -336,7 +343,7 @@ function drawC(){
   $('#lc').innerHTML=L.length?L.map(c=>{
     const ls=S.loans.filter(l=>l.client===c.id).map(sched),mo=ls.filter(s=>s.st==='mora').length;
     const cal=!ls.length?'Sin historial':mo?'Con mora':ls.every(s=>s.st==='pagado')?'Al día · sin deudas':'Al día';
-    return`<div class="row"><div><b>${esc(c.nombre)}</b><small>${esc(c.tel)} · Doc. ${esc(c.doc)} · ${esc(c.dir)}</small><small>${ls.length} préstamo(s) · ${cal}</small>${c.nota?'<small>Nota: '+esc(c.nota)+'</small>':''}</div><span><a class="lk" data-nl="${c.id}">Crear préstamo</a> · <a class="lk" data-ed="${c.id}">Editar</a> · <a class="lk" data-del="${c.id}">Eliminar</a></span></div>`}).join(''):`<p class="empty">${S.clients.length?'Sin resultados.':'Aún no hay clientes.'}</p>`;
+    return`<div class="row"><div><b>${esc(c.nombre)}</b><small>${esc(c.tel)} · Doc. ${esc(c.doc)} · ${esc(c.dir)}</small><small>${ls.length} préstamo(s) · ${cal}</small>${c.nota?'<small>Nota: '+esc(c.nota)+'</small>':''}${c.por?'<small>Registrado por '+esc(c.por)+(c.porTs?' · '+fdate(isoL(c.porTs)):'')+'</small>':''}</div><span><a class="lk" data-nl="${c.id}">Crear préstamo</a> · <a class="lk" data-ed="${c.id}">Editar</a> · <a class="lk" data-del="${c.id}">Eliminar</a></span></div>`}).join(''):`<p class="empty">${S.clients.length?'Sin resultados.':'Aún no hay clientes.'}</p>`;
   document.querySelectorAll('[data-nl]').forEach(a=>a.onclick=()=>{selC=a.dataset.nl;tab='prestamos';render();window.scrollTo(0,0)});
   document.querySelectorAll('[data-ed]').forEach(a=>a.onclick=()=>{editC=a.dataset.ed;render();window.scrollTo(0,0)});
   document.querySelectorAll('[data-del]').forEach(a=>a.onclick=()=>{const id=a.dataset.del;if(S.loans.some(l=>l.client===id)){alert('Este cliente tiene préstamos y no se puede eliminar.');return}if(confirm('¿Eliminar cliente?')){S.clients=S.clients.filter(c=>c.id!==id);save();render()}});
@@ -379,7 +386,7 @@ function bindOpen(){document.querySelectorAll('[data-open]').forEach(a=>a.onclic
 function openLoan(id){
   const l=S.loans.find(x=>x.id===id);if(!l)return;const s=sched(l),d=$('#dlg');
   d.innerHTML=`<h2>${l.code?esc(l.code)+' · ':''}${esc(cname(l.client))} · ${fmt(l.monto)} al ${l.tasa}% mensual</h2>
-  <p class="note">${l.metodo==='simple'?'Interés simple':'Interés sobre saldo'} · ${l.n} cuotas ${FP[l.freq]} · <span class="tag ${s.st}">${LBL[s.st]}</span> <button type="button" class="btn ghost" id="apv" style="padding:4px 10px;font-size:.85rem">Ver aprobación</button></p>
+  <p class="note">${l.metodo==='simple'?'Interés simple':'Interés sobre saldo'} · ${l.n} cuotas ${FP[l.freq]} · <span class="tag ${s.st}">${LBL[s.st]}</span>${l.por?' · Propuesto por '+esc(l.por):''} <button type="button" class="btn ghost" id="apv" style="padding:4px 10px;font-size:.85rem">Ver aprobación</button></p>
   ${s.st==='pagado'?'<div class="card ok"><b>✓ Préstamo finalizado.</b> El cliente está al día y no tiene deuda pendiente.</div>':''}${s.st==='mora'?`<div class="card late"><b>⚠ Pago vencido:</b> ${fmt(s.overdue)} ${waA(l.client,'Hola '+cname(l.client)+', le recordamos que tiene un pago vencido de '+fmt(s.overdue)+'. Por favor comuníquese para ponerse al día.',l)}</div>`:''}<label style="margin-bottom:10px">Observaciones del préstamo<textarea id="lob" rows="2">${esc(l.obs)}</textarea></label><label style="margin-bottom:10px">Mensaje opcional para el cliente (se agrega a los avisos de WhatsApp)<textarea id="lmsg" rows="2" placeholder="Ej: Puede pagar por Nequi o Bancolombia.">${esc(l.msg)}</textarea></label>
   <div class="grid" style="margin-bottom:12px"><div class="stat"><b>${fmt(s.total)}</b><span>Total a pagar</span></div><div class="stat"><b>${fmt(s.paid)}</b><span>Pagado</span></div><div class="stat"><b>${fmt(s.saldo)}</b><span>Saldo</span></div><div class="stat"><b>${fmt(s.mora)}</b><span>Mora estimada</span></div></div>
   <div class="wrap"><table class="cuo${s.rows.some(r=>r.late&&(+l.mora||0)>0)?'':' nomo'}"><tr><th>#</th><th>Vence</th><th class="n">Cuota</th><th class="n">Pagado</th><th class="n mo">Mora</th><th>Estado</th><th></th></tr>${s.rows.map(r=>{const ok=r.paid>=r.tot-.5,ab=r.paid>0&&!ok,dm=r.late?Math.max(0,(new Date(today())-new Date(r.date))/864e5):0,mo=r.late?(r.tot-r.paid)*(+l.mora||0)/100*dm/30:0;return`<tr class="${ok?'okr':r.late?'later':''}"><td>${r.k}</td><td>${fdate(r.date).replace(/ (\d{4})$/,'<span class="yr"> $1</span>')}</td><td class="n" title="Capital ${fmt(r.cap)} · Interés ${fmt(r.int)}">${fmt(r.tot)}</td><td class="n" style="${r.paid>0?'color:var(--ok);font-weight:700':''}">${r.paid>0?fmt(r.paid):'—'}</td><td class="n mo" style="color:var(--bad)">${mo>0.5?fmt(mo):'—'}</td><td><span class="tag ${ok?'pagado':ab?'activo':r.late?'mora':'pend'}">${ok?'✓ Pagada':ab?'Abonó':r.late?'Atrasada':r.apl?'↻ Aplazada':'Pendiente'}</span></td><td class="act">${ok?'':'<button type="button" class="pgb" data-pr="'+r.k+'">Pagar</button>'+waA(l.client,r.late?'Hola '+cname(l.client)+', su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' venció el '+r.date+'. Por favor comuníquese para ponerse al día.':'Hola '+cname(l.client)+', le recordamos que su cuota '+r.k+' de '+fmt(r.tot-r.paid)+' vence el '+r.date+'. ¡Gracias!',l)}</td></tr>`}).join('')}</table></div>
@@ -518,7 +525,7 @@ function receipt(pid,fresh){
     bind:()=>{$('#cpr').onclick=()=>receiptPrint(pid);const u=$('#cud');if(u)u.onclick=()=>{if(!confirm('¿Deshacer este pago?'))return;S.pays=S.pays.filter(x=>x.id!==pid);save();LASTPAY=0;$('#rc').close();if($('#dlg').open)openLoan(l.id);render()}}});
 }
 /* Novedades (se muestran una vez por versión) */
-const NEWS=['Nuevo diseño tipo dashboard: menú lateral con iconos en el computador y barra inferior en el celular; tema claro con fondo blanco y tema oscuro casi negro. Tus datos no cambian.','Nuevo botón «Pagar solo intereses»: si el cliente no puede pagar la cuota completa, abona solo el interés; la cuota se aplaza un período, no queda en mora y el capital no cambia. Genera su recibo.','Nuevo botón «🎁 Ofrecer crédito»: envía por WhatsApp un mensaje cordial (texto e imagen) a los clientes que finalizaron, están por finalizar o al día, con el valor disponible opcional.','En Reportes: «Estado de clientes» con filtros Al día, Por finalizar, Finalizados y En mora, y recibo por WhatsApp (estado de cuenta o paz y salvo) para enviar cuantas veces quieras.','En el Panel: aviso de clientes por terminar o recién finalizados para ofrecerles un nuevo crédito.','Al crear un préstamo aparece la aprobación con el número de cuotas y todas las fechas de pago, lista para compartir como imagen.','Pago en un toque: la próxima cuota ya aparece lista, solo toca «Pagar».','El recibo de pago ahora es una imagen para compartir, con cuotas pagadas y pendientes.','La app descarga las mejoras cuando hay internet y te avisa para que las aceptes. Tus datos no se tocan.','Cada cuota tiene su botón «Pagar» y se muestra la mora por línea.','Respaldo: exportar e importar (fusionando o reemplazando) y copias internas con restauración.','Huella / Face ID para entrar, con la opción «Mantener la huella siempre activa» y «Reasignar huella».'];
+const NEWS=['Nuevo: cuentas de administrador y cobradores. El administrador ve en «Actividad» cada cliente o préstamo que registra un cobrador y lo aprueba o rechaza; en «Cuentas» crea, desactiva y restablece la contraseña de los cobradores. Tu cartera sigue guardada solo en este dispositivo.','Nuevo diseño tipo dashboard: menú lateral con iconos en el computador y barra inferior en el celular; tema claro con fondo blanco y tema oscuro casi negro. Tus datos no cambian.','Nuevo botón «Pagar solo intereses»: si el cliente no puede pagar la cuota completa, abona solo el interés; la cuota se aplaza un período, no queda en mora y el capital no cambia. Genera su recibo.','Nuevo botón «🎁 Ofrecer crédito»: envía por WhatsApp un mensaje cordial (texto e imagen) a los clientes que finalizaron, están por finalizar o al día, con el valor disponible opcional.','En Reportes: «Estado de clientes» con filtros Al día, Por finalizar, Finalizados y En mora, y recibo por WhatsApp (estado de cuenta o paz y salvo) para enviar cuantas veces quieras.','En el Panel: aviso de clientes por terminar o recién finalizados para ofrecerles un nuevo crédito.','Al crear un préstamo aparece la aprobación con el número de cuotas y todas las fechas de pago, lista para compartir como imagen.','Pago en un toque: la próxima cuota ya aparece lista, solo toca «Pagar».','El recibo de pago ahora es una imagen para compartir, con cuotas pagadas y pendientes.','La app descarga las mejoras cuando hay internet y te avisa para que las aceptes. Tus datos no se tocan.','Cada cuota tiene su botón «Pagar» y se muestra la mora por línea.','Respaldo: exportar e importar (fusionando o reemplazando) y copias internas con restauración.','Huella / Face ID para entrar, con la opción «Mantener la huella siempre activa» y «Reasignar huella».'];
 function showNews(){const c=S.cfg;if(c.seenV===APPV)return;const first=!c.seenV&&!S.clients.length&&!S.loans.length;c.seenV=APPV;save();if(first)return;
   const r=$('#rc');document.body.classList.remove('rcp');r.onclose=null;r.innerHTML='<h2>✨ Novedades · versión '+APPV+'</h2><ul>'+NEWS.map(n=>'<li>'+esc(n)+'</li>').join('')+'</ul><p class="note">Tus clientes, préstamos, pagos y capital siguen intactos.</p><p><button class="btn" id="nx">Entendido</button></p>';if(!r.open)r.showModal();$('#nx').onclick=()=>r.close()}
 /* Actualizaciones: se descargan solas con internet y el cliente las acepta con un toque */
@@ -665,8 +672,150 @@ function lock(mode){
     if(mode==='in'){if(await hs(f.p,SEC.salt,SEC.alg)===SEC.h){sessionStorage.setItem('unl','1');unlock()}else m.textContent='Contraseña incorrecta.'}
     else if(await hs(f.c,SEC.salt,SEC.alg)===SEC.r){await setSec(f.p,f.c);sessionStorage.setItem('unl','1');unlock()}else m.textContent='Código incorrecto.'};
 }
-function unlock(){$('#lock').hidden=true;document.body.classList.remove('locked');render();startAlerts();showNews();try{autoCopy()}catch(e){}offerBio()}
+const hasData=()=>!!(S.clients.length||S.loans.length||S.pays.length||S.cap.length||SEC);
+function after(){cloudStart();render();startAlerts();showNews();try{autoCopy()}catch(e){}offerBio()}
+function unlock(){$('#lock').hidden=true;document.body.classList.remove('locked');if(!MODE){if(hasData())setMode('admin');else{modeGate();return}}after()}
 function boot(){applyTheme();let nb=0;const bt=setInterval(()=>{const l=$('#lock');if(++nb>40||isApp())return clearInterval(bt);if(l&&l.hidden){showBanner();if($('#ib')||(!DIP&&!/iphone|ipad|ipod/i.test(navigator.userAgent)&&nb>5))clearInterval(bt)}},1500);$('#tg').onclick=toggleTheme;watchSW();checkEstado();addEventListener('online',checkEstado);document.addEventListener('visibilitychange',()=>{if(!document.hidden)checkEstado()});setInterval(checkEstado,3e5);let u=false;try{u=sessionStorage.getItem('unl')}catch(e){}if((SEC||(BIO&&bioOK()))&&!u)lock('in');else unlock()}
+/* ===== v3.19: cuentas en la nube (administrador y cobradores) =====
+   Tu cartera (préstamos, pagos, capital) sigue guardada solo en este dispositivo.
+   En la nube (Firebase) solo viven las cuentas de cobradores y sus solicitudes (cliente nuevo / préstamo propuesto). */
+const ADMIN_UID='tHbizzoxtCcwpSycv4gxIIOPg5i1';
+const FBC={apiKey:"AIzaSyCKsyqO9LA6q5CzW53e6xCLz81ChpErsDU",authDomain:"walletdashbmultuserprestamos.firebaseapp.com",projectId:"walletdashbmultuserprestamos",storageBucket:"walletdashbmultuserprestamos.firebasestorage.app",messagingSenderId:"73167062652",appId:"1:73167062652:web:62f11fc54b9f7ac54b2bf9"};
+const FBV='10.14.1',MK='prestamos_mode',CKY='prestamos_cloud';
+const TABS_ADM=[['panel','Panel'],['clientes','Crear cliente'],['prestamos','Préstamos'],['capital','Capital'],['reportes','Reportes'],['actividad','Actividad'],['cuentas','Cuentas'],['ajustes','Ajustes']];
+let MODE=null;try{MODE=localStorage.getItem(MK)}catch(e){}
+const isCob=()=>MODE==='cob';
+const tabsNow=()=>isCob()?[['cclientes','Clientes'],['envios','Mis envíos']]:TABS_ADM;
+const setMode=m=>{MODE=m;try{localStorage.setItem(MK,m)}catch(e){}};
+let CL={fb:null,user:null,role:null,prof:null,sols:[],users:[],un:[],first:true,filter:'pendiente',busy:false,msg:'',q:'',watching:false};
+const pendN=()=>CL.role==='admin'?CL.sols.filter(s=>s.estado==='pendiente').length:0;
+const isoL=ts=>{const d=new Date(ts);return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0')};
+const ST={pendiente:['Pendiente','wn'],aprobada:['Aprobada','ok'],rechazada:['Rechazada','bd']};
+const withTO=(p,ms)=>Promise.race([p,new Promise((_,r)=>setTimeout(()=>r({code:'unavailable'}),ms||15000))]);
+const fbErr=e=>{const c=(e&&e.code)||'';return({'auth/invalid-credential':'Correo o contraseña incorrectos.','auth/wrong-password':'Correo o contraseña incorrectos.','auth/user-not-found':'Correo o contraseña incorrectos.','auth/invalid-email':'El correo no es válido.','auth/email-already-in-use':'Ese correo ya tiene una cuenta. Usa otro correo o bórrala en Firebase > Authentication.','auth/weak-password':'La contraseña debe tener al menos 6 caracteres.','auth/network-request-failed':'Sin conexión. Revisa tu internet.','auth/too-many-requests':'Demasiados intentos. Espera unos minutos.','permission-denied':'Sin permiso. Revisa las reglas de Firestore.','unavailable':'Sin conexión con la nube. Revisa tu internet.'}[c]||('Error: '+(c||(e&&e.message)||'desconocido')))};
+async function fbLoad(){if(CL.fb)return CL.fb;const B='https://www.gstatic.com/firebasejs/'+FBV+'/';const[a,au,fs]=await Promise.all([import(B+'firebase-app.js'),import(B+'firebase-auth.js'),import(B+'firebase-firestore.js')]);const app=a.initializeApp(FBC);CL.fb={a,au,fs,app,auth:au.getAuth(app),db:fs.getFirestore(app)};return CL.fb}
+async function fbWatch(){const c=await fbLoad();if(!CL.watching){CL.watching=true;c.au.onAuthStateChanged(c.auth,authChanged)}return c}
+async function cloudStart(){let want=isCob();try{want=want||localStorage.getItem(CKY)==='1'}catch(e){}if(!want)return;try{await fbWatch()}catch(e){if(isCob())cobLogin('No se pudo cargar la nube. Conéctate a internet y recarga la app.')}}
+const rmBox=id=>{const b=$('#'+id);if(b)b.remove()};
+function stopL(){CL.un.forEach(f=>{try{f()}catch(e){}});CL.un=[]}
+async function authChanged(u){stopL();CL.user=u||null;CL.role=null;CL.prof=null;CL.sols=[];CL.users=[];const f=CL.fb;
+  if(!u){if(isCob())cobLogin();cloudDraw();return}
+  if(isCob()){let p=null,bad=null;try{const d=await f.fs.getDoc(f.fs.doc(f.db,'users',u.uid));p=d.exists()?d.data():null}catch(e){bad=e}
+    if(bad){cobLogin(fbErr(bad));return}
+    if(!p||p.activo!==true){try{await f.au.signOut(f.auth)}catch(e){}cobLogin(p?'Tu cuenta está desactivada. Habla con el administrador.':'Esta cuenta no está registrada como cobrador.');return}
+    CL.role='cob';CL.prof=p;rmBox('clg');listenCob(u.uid)}
+  else if(u.uid===ADMIN_UID){CL.role='admin';CL.msg='';try{localStorage.setItem(CKY,'1')}catch(e){}listenAdm()}
+  else{CL.msg='Esa cuenta no es la del administrador.';try{await f.au.signOut(f.auth)}catch(e){}return}
+  cloudDraw()}
+function toast(t){const b=document.createElement('div');b.className='toast';b.setAttribute('role','alert');b.textContent=t;document.body.appendChild(b);setTimeout(()=>b.remove(),8000);try{if(S.cfg.notif&&Notification.permission==='granted')new Notification('Nueva solicitud',{body:t})}catch(e){}}
+function listenAdm(){const{fs,db}=CL.fb;CL.first=true;
+  CL.un.push(fs.onSnapshot(fs.query(fs.collection(db,'solicitudes'),fs.orderBy('ts','desc')),snap=>{CL.sols=snap.docs.map(d=>({id:d.id,...d.data()}));
+    if(!CL.first)snap.docChanges().forEach(c=>{if(c.type==='added'&&!c.doc.metadata.hasPendingWrites){const s=c.doc.data();if(s.estado==='pendiente')toast((s.porNombre||'Un cobrador')+': '+solDesc(s))}});
+    CL.first=false;cloudDraw()},e=>{CL.msg=fbErr(e);cloudDraw()}));
+  CL.un.push(fs.onSnapshot(fs.collection(db,'users'),snap=>{CL.users=snap.docs.map(d=>({id:d.id,...d.data()}));cloudDraw()},e=>{CL.msg=fbErr(e);cloudDraw()}))}
+function listenCob(uid){const{fs,db}=CL.fb;
+  CL.un.push(fs.onSnapshot(fs.query(fs.collection(db,'solicitudes'),fs.where('por','==',uid)),snap=>{CL.sols=snap.docs.map(d=>({id:d.id,...d.data()})).sort((a,b)=>(b.ts||0)-(a.ts||0));cloudDraw()},e=>{toast(fbErr(e))}))}
+function cloudDraw(){try{nav();if(tab==='panel'){const pb=$('#pendBox');if(pb)pb.innerHTML=pendInner()}else{const m={actividad:drawAct,cuentas:drawCu,cclientes:drawCb,envios:drawEn}[tab];if(m)m()}}catch(e){}}
+async function cloudOut(){try{const f=CL.fb;if(f)await f.au.signOut(f.auth)}catch(e){}try{localStorage.setItem(CKY,'0')}catch(e){}CL.msg='';if(!isCob())render()}
+function pendInner(){const n=pendN();return n?`<div class="card alert"><h2>📥 ${n} solicitud${n>1?'es':''} de cobradores por revisar</h2><p class="note">Clientes nuevos o préstamos propuestos esperan tu aprobación.</p><button type="button" class="btn" data-go="actividad">Revisar ahora</button></div>`:''}
+const pendHtml=()=>'<div id="pendBox">'+pendInner()+'</div>';
+document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g){tab=g.dataset.go;render();window.scrollTo(0,0)}});
+
+/* Elegir tipo de uso (solo la primera vez en un dispositivo sin datos) y acceso del cobrador */
+function modeGate(){let b=$('#mdg');if(!b){b=document.createElement('div');b.id='mdg';b.className='blq';document.body.appendChild(b)}
+  b.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>¿Cómo vas a usar la app?</h2><p class="note">El administrador lleva la cartera en este dispositivo. El cobrador solo registra clientes y propone préstamos.</p><button class="btn" type="button" id="mda">Soy el administrador</button><button class="btn ghost" type="button" id="mdc">Soy cobrador</button></div>`;
+  $('#mda').onclick=()=>{setMode('admin');b.remove();after()};$('#mdc').onclick=()=>{setMode('cob');b.remove();after()}}
+function cobLogin(msg){let b=$('#clg');if(!b){b=document.createElement('div');b.id='clg';b.className='blq';document.body.appendChild(b)}
+  b.innerHTML=`<div class="lbox"><img src="${IC[curMode()==='dark'?'d':'l']}" width="84" height="84" alt=""><h2>Acceso de cobrador</h2><form id="clf"><label>Correo<input type="email" name="e" autocomplete="username" required></label><label>Contraseña<input type="password" name="p" autocomplete="current-password" required></label><button class="btn">Entrar</button></form><p class="note" id="clm" style="color:var(--bad)">${esc(msg||'')}</p><a class="lk" id="clb">No soy cobrador</a></div>`;
+  $('#clf').onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(ev.target)),m=$('#clm'),bt=ev.target.querySelector('button');m.textContent='';bt.disabled=true;
+    try{const c=await fbWatch();await c.au.signInWithEmailAndPassword(c.auth,d.e.trim(),d.p)}catch(e){m.textContent=fbErr(e)}bt.disabled=false};
+  $('#clb').onclick=()=>{try{localStorage.removeItem(MK)}catch(e){}location.reload()}}
+
+/* Tarjeta de conexión del administrador */
+function cloudLoginCard(){return`<div class="card"><h2>Conectar con la nube</h2><p class="note">Entra con tu correo de administrador para ver lo que registran tus cobradores y crear sus cuentas. Tu cartera (préstamos, pagos y capital) sigue guardándose solo en este dispositivo.</p>${CL.msg?'<p style="color:var(--bad)"><b>'+esc(CL.msg)+'</b></p>':''}<form id="cll"><label>Correo<input type="email" name="e" autocomplete="username" required></label><label>Contraseña<input type="password" name="p" autocomplete="current-password" required></label><div class="full"><button class="btn">Conectar</button></div></form></div>`}
+function bindCll(){const f=$('#cll');if(!f)return;f.onsubmit=async ev=>{ev.preventDefault();const d=Object.fromEntries(new FormData(f)),b=f.querySelector('button');b.disabled=true;b.textContent='Conectando…';CL.msg='';
+  try{const c=await fbWatch();await c.au.signInWithEmailAndPassword(c.auth,d.e.trim(),d.p)}catch(e){CL.msg=fbErr(e);const el=$('#ac')||$('#cu');if(el){el.dataset.st='';}cloudDraw()}}}
+
+/* ---- Administrador: Actividad ---- */
+function solDesc(s){const d=s.datos||{};if(s.tipo==='cliente')return'Cliente nuevo: '+(d.nombre||'')+(d.tel?' · '+d.tel:'')+(d.doc?' · Doc. '+d.doc:'');const c=d.cliente||{};return'Préstamo de '+fmt(d.monto)+' para '+(c.nombre||'')+' · '+d.n+' cuotas '+(FP[d.freq]||'')+' · '+d.tasa+'% mensual'}
+function solRow(s){const t=s.tipo==='cliente'?'👤 Cliente nuevo':'💵 Préstamo propuesto',st=ST[s.estado]||['',''],w=s.ts?fdate(isoL(s.ts))+' · '+ftime(s.ts):'',d=s.datos||{};let ex='';
+  if(s.tipo==='prestamo'){const r=calc({...d,fecha:today()});ex='<small>'+(d.metodo==='simple'?'Interés simple':'Interés sobre saldo')+(r.length?' · cuota '+fmt(r[0].tot)+' · total '+fmt(r.reduce((a,x)=>a+x.tot,0)):'')+(+d.mora?' · mora '+d.mora+'%':'')+'</small>'+(d.obs?'<small>Obs.: '+esc(d.obs)+'</small>':'')}
+  else{const c=d;ex=(c.dir?'<small>'+esc(c.dir)+'</small>':'')+(c.nota?'<small>Nota: '+esc(c.nota)+'</small>':'')}
+  return`<div class="row"><div><b>${esc(s.porNombre||'Cobrador')}</b> · ${t}<i class="tg ${st[1]}">${st[0]}</i><small>${esc(solDesc(s))}</small>${ex}<small>${w}${s.estado==='aprobada'&&s.loanCode?' · '+esc(s.loanCode):''}${s.motivo?' · Motivo: '+esc(s.motivo):''}</small></div><span>${s.estado==='pendiente'?`<button type="button" class="ofb" data-ap="${s.id}">Aprobar</button> <a class="lk" data-rj="${s.id}">Rechazar</a>`:''}</span></div>`}
+function actividad(){$('#v').innerHTML='<div id="ac"></div>';drawAct()}
+function drawAct(){const el=$('#ac');if(!el)return;
+  if(CL.role!=='admin'){el.innerHTML=cloudLoginCard();bindCll();return}
+  const all=CL.sols,cnt=k=>all.filter(s=>k==='todas'||s.estado===k).length,list=all.filter(s=>CL.filter==='todas'||s.estado===CL.filter);
+  el.innerHTML=`<div class="card"><h2>Actividad de cobradores</h2><p class="note">Sesión: ${esc(CL.user.email)} · <a class="lk" id="clo">Cerrar sesión en la nube</a></p>${CL.msg?'<p style="color:var(--bad)"><b>'+esc(CL.msg)+'</b></p>':''}<div class="chs">${[['pendiente','Pendientes'],['aprobada','Aprobadas'],['rechazada','Rechazadas'],['todas','Todas']].map(c=>`<button type="button" class="chb ${CL.filter===c[0]?'on':''}" data-sf="${c[0]}">${c[1]} · ${cnt(c[0])}</button>`).join('')}</div>${list.length?list.map(solRow).join(''):'<p class="empty">No hay solicitudes en este grupo.</p>'}<p class="note">Al aprobar un préstamo se crea en tu cartera con su código (P-001…) y se abre su aprobación para compartir; empieza el día en que lo apruebas. Aprobar un cliente lo agrega a tu lista de clientes.</p></div>`;
+  el.querySelectorAll('[data-sf]').forEach(b=>b.onclick=()=>{CL.filter=b.dataset.sf;drawAct()});
+  el.querySelectorAll('[data-ap]').forEach(b=>b.onclick=()=>aprobar(b.dataset.ap));
+  el.querySelectorAll('[data-rj]').forEach(b=>b.onclick=()=>rechazar(b.dataset.rj));
+  $('#clo').onclick=cloudOut}
+async function resolver(s,estado,extra){const{fs,db}=CL.fb;await fs.updateDoc(fs.doc(db,'solicitudes',s.id),{estado,resTs:Date.now(),...(extra||{})})}
+function ensureClient(pn,ts,c,sid){const cid=sid?'k'+sid:null;let x=cid&&S.clients.find(k=>k.id===cid);if(x)return x.id;
+  x=c.doc&&S.clients.find(k=>String(k.doc||'').trim()===String(c.doc).trim());if(x)return x.id;
+  const n={id:cid||uid(),nombre:c.nombre||'',tel:c.tel||'',doc:c.doc||'',dir:c.dir||'',nota:c.nota||'',por:pn,porTs:ts};S.clients.push(n);save();return n.id}
+async function aprobar(id){const s=CL.sols.find(x=>x.id===id);if(!s||s.estado!=='pendiente'||CL.busy)return;const d=s.datos||{};S.appr=S.appr||{};let code='',lid=null;
+  if(S.appr[id]){code=(S.loans.find(l=>l.id===S.appr[id].loan)||{}).code||''}
+  else if(s.tipo==='cliente'){if(!confirm('¿Aprobar el cliente «'+(d.nombre||'')+'»? Se agregará a tu lista de clientes (registrado por '+(s.porNombre||'cobrador')+').'))return;const cid=ensureClient(s.porNombre,s.ts,d,s.id);S.appr[id]={client:cid};save()}
+  else{const c=d.cliente||{},rows=calc({...d,fecha:today()});if(!rows.length){alert('La solicitud tiene datos inválidos.');return}
+    let m='Préstamo de '+fmt(d.monto)+' para '+(c.nombre||'')+'\n'+d.n+' cuotas '+(FP[d.freq]||'')+' de '+fmt(rows[0].tot)+' al '+d.tasa+'% mensual.\nPropuesto por '+(s.porNombre||'cobrador')+'.\nEl préstamo empezará hoy ('+fdate(today())+').';
+    if(S.cap.length){const cs=capStats();if(+d.monto>cs.caja)m+='\n\n⚠ Supera tu capital disponible ('+fmt(cs.caja)+').'}
+    if(!confirm(m+'\n\n¿Aprobar y crear el préstamo?'))return;
+    const cid=ensureClient(s.porNombre,s.ts,c,d.cref);
+    const ln={id:uid(),client:cid,monto:String(d.monto),tasa:String(d.tasa),metodo:d.metodo,n:String(d.n),freq:d.freq,fecha:today(),mora:String(d.mora||0),obs:d.obs||'',msg:d.msg||'',code:newCode(),por:s.porNombre||'',porTs:s.ts};
+    S.loans.push(ln);S.appr[id]={loan:ln.id};save();lid=ln.id;code=ln.code}
+  CL.busy=true;try{await resolver(s,'aprobada',code?{loanCode:code}:{})}catch(e){alert('Se aplicó en tu cartera, pero no se pudo marcar la solicitud en la nube ('+fbErr(e)+'). Vuelve a pulsar «Aprobar» para terminar.')}CL.busy=false;
+  if(lid){render();approval(lid)}else if(s.tipo==='cliente')toast('Cliente agregado a tu lista.')}
+async function rechazar(id){const s=CL.sols.find(x=>x.id===id);if(!s||s.estado!=='pendiente'||CL.busy)return;const m=prompt('Motivo del rechazo (opcional):','');if(m===null)return;CL.busy=true;try{await resolver(s,'rechazada',{motivo:m.trim()})}catch(e){alert(fbErr(e))}CL.busy=false}
+
+/* ---- Administrador: Cuentas ---- */
+function cuentas(){$('#v').innerHTML='<div id="cu"></div>';drawCu()}
+function drawCu(){const el=$('#cu');if(!el)return;const adm=CL.role==='admin';
+  if(!adm){if(el.dataset.st!=='0'||CL.msg){el.dataset.st='0';el.innerHTML=cloudLoginCard();bindCll()}return}
+  if(el.dataset.st!=='1'){el.dataset.st='1';
+    el.innerHTML=`<div class="card"><h2>Nueva cuenta de cobrador</h2><p class="note">Sesión: ${esc(CL.user.email)} · <a class="lk" id="clo">Cerrar sesión en la nube</a><br>El cobrador solo puede registrar clientes y proponer préstamos; tú los apruebas desde Actividad.</p><form id="cuf"><label>Nombre<input name="nombre" required></label><label>Correo<input name="email" type="email" autocomplete="off" required></label><label>Contraseña (mín. 6)<input name="pass" type="text" minlength="6" autocomplete="off" required></label><div class="full"><button class="btn">Crear cuenta</button></div></form></div><div class="card"><h2>Cobradores</h2><div id="cul"></div></div>`;
+    $('#clo').onclick=cloudOut;
+    $('#cuf').onsubmit=async ev=>{ev.preventDefault();const form=ev.target,f=Object.fromEntries(new FormData(form)),b=form.querySelector('button'),nombre=f.nombre.trim(),email=f.email.trim().toLowerCase();if(!nombre)return;b.disabled=true;b.textContent='Creando…';
+      try{const c=CL.fb;let sec;try{sec=c.a.getApp('sec')}catch(x){sec=c.a.initializeApp(FBC,'sec')}const sa=c.au.getAuth(sec),cr=await c.au.createUserWithEmailAndPassword(sa,email,f.pass),u2=cr.user.uid;try{await c.au.signOut(sa)}catch(x){}
+        await c.fs.setDoc(c.fs.doc(c.db,'users',u2),{nombre,email,activo:true,rol:'cobrador',creado:Date.now()});form.reset();alert('Cuenta creada. Entrégale a '+nombre+' su correo y su contraseña: entra a la app con la opción «Soy cobrador».')}
+      catch(e){alert(fbErr(e))}b.disabled=false;b.textContent='Crear cuenta'}}
+  drawCuList()}
+function drawCuList(){const el=$('#cul');if(!el)return;const U=CL.users.slice().sort((a,b)=>String(a.nombre||'').localeCompare(String(b.nombre||'')));
+  el.innerHTML=U.length?U.map(u=>{const m=CL.sols.filter(s=>s.por===u.id),c=k=>m.filter(s=>s.estado===k).length;return`<div class="row"><div><b>${esc(u.nombre||'')}</b><i class="tg ${u.activo?'ok':'bd'}">${u.activo?'Activo':'Desactivado'}</i><small>${esc(u.email||'')}</small><small>${c('pendiente')} pendientes · ${c('aprobada')} aprobadas · ${c('rechazada')} rechazadas</small></div><span><a class="lk" data-ct="${u.id}">${u.activo?'Desactivar':'Activar'}</a> · <a class="lk" data-rp="${u.id}">Restablecer contraseña</a></span></div>`}).join(''):'<p class="empty">Aún no has creado cobradores.</p>';
+  el.querySelectorAll('[data-ct]').forEach(a=>a.onclick=async()=>{const u=CL.users.find(x=>x.id===a.dataset.ct);if(!u||!confirm((u.activo?'¿Desactivar':'¿Activar')+' la cuenta de '+u.nombre+'?'+(u.activo?' No podrá entrar ni enviar solicitudes.':'')))return;try{await CL.fb.fs.updateDoc(CL.fb.fs.doc(CL.fb.db,'users',u.id),{activo:!u.activo})}catch(e){alert(fbErr(e))}});
+  el.querySelectorAll('[data-rp]').forEach(a=>a.onclick=async()=>{const u=CL.users.find(x=>x.id===a.dataset.rp);if(!u||!confirm('¿Enviar a '+u.email+' un correo para restablecer su contraseña?'))return;try{await CL.fb.au.sendPasswordResetEmail(CL.fb.auth,u.email);alert('Correo enviado a '+u.email+'.')}catch(e){alert(fbErr(e))}})}
+
+/* ---- Cobrador: Clientes y Mis envíos ---- */
+function cclientes(){$('#v').innerHTML='<div id="cb"></div>';drawCb()}
+function drawCb(){const el=$('#cb');if(!el)return;
+  if(CL.role!=='cob'){el.dataset.st='';el.innerHTML='<div class="card"><p class="empty">Conectando con la nube…</p></div>';return}
+  if(el.dataset.st!=='1'){el.dataset.st='1';
+    el.innerHTML=`<div class="card"><h2>Nuevo cliente</h2><p class="note">Hola, ${esc(CL.prof.nombre||CL.user.email)}. Cada cliente que registres le llega al administrador para su aprobación.</p><form id="cbf"><label>Nombre<input name="nombre" required></label><label>Teléfono<input name="tel" inputmode="tel"></label><label>Documento<input name="doc"></label><label>Dirección<input name="dir"></label><label class="full">Notas u observaciones<textarea name="nota" rows="2"></textarea></label><div class="full"><button class="btn">Enviar cliente</button></div></form></div><div class="card"><h2>Mis clientes</h2><input id="cbq" type="search" placeholder="Buscar por nombre, teléfono o documento" value="${esc(CL.q)}" style="margin-bottom:8px"><div id="cbl"></div></div>`;
+    $('#cbq').oninput=e=>{CL.q=e.target.value;drawCbList()};
+    $('#cbf').onsubmit=async ev=>{ev.preventDefault();const form=ev.target,f=Object.fromEntries(new FormData(form)),b=form.querySelector('button');f.nombre=String(f.nombre||'').trim();if(!f.nombre)return;
+      const dup=f.doc&&CL.sols.find(s=>s.tipo==='cliente'&&s.estado!=='rechazada'&&String((s.datos||{}).doc||'').trim()===String(f.doc).trim());if(dup&&!confirm('Ya enviaste un cliente con ese documento ('+dup.datos.nombre+'). ¿Enviar otro de todas formas?'))return;
+      const datos={nombre:f.nombre,tel:f.tel||'',doc:f.doc||'',dir:f.dir||'',nota:f.nota||''};b.disabled=true;b.textContent='Enviando…';
+      try{const c=CL.fb,r=await withTO(c.fs.addDoc(c.fs.collection(c.db,'solicitudes'),{tipo:'cliente',estado:'pendiente',por:CL.user.uid,porNombre:CL.prof.nombre||CL.user.email,ts:Date.now(),datos}));form.reset();if(confirm('Cliente «'+datos.nombre+'» enviado al administrador. ¿Proponer su préstamo ahora?'))loanDlg(r.id,datos)}
+      catch(e){alert(fbErr(e)+'\nRevisa «Mis envíos» antes de reintentar, por si se alcanzó a enviar.')}b.disabled=false;b.textContent='Enviar cliente'}}
+  drawCbList()}
+function drawCbList(){const el=$('#cbl');if(!el)return;const t=(CL.q||'').toLowerCase(),L=CL.sols.filter(s=>s.tipo==='cliente'&&[(s.datos||{}).nombre,(s.datos||{}).tel,(s.datos||{}).doc].join(' ').toLowerCase().includes(t));
+  el.innerHTML=L.length?L.map(s=>{const d=s.datos||{},st=ST[s.estado]||['',''],n=CL.sols.filter(x=>x.tipo==='prestamo'&&x.datos&&x.datos.cref===s.id).length;
+    return`<div class="row"><div><b>${esc(d.nombre)}</b><i class="tg ${st[1]}">${st[0]}</i><small>${esc([d.tel,d.doc?'Doc. '+d.doc:'',d.dir].filter(Boolean).join(' · '))}</small>${n?'<small>'+n+' propuesta'+(n>1?'s':'')+' de préstamo enviada'+(n>1?'s':'')+'</small>':''}${s.motivo?'<small>Motivo del rechazo: '+esc(s.motivo)+'</small>':''}</div><span>${s.estado!=='rechazada'?'<button type="button" class="ofb" data-lp="'+s.id+'">Proponer préstamo</button>':''}</span></div>`}).join(''):`<p class="empty">${CL.sols.some(s=>s.tipo==='cliente')?'Sin resultados.':'Aún no has registrado clientes.'}</p>`;
+  el.querySelectorAll('[data-lp]').forEach(b=>b.onclick=()=>loanDlg(b.dataset.lp))}
+function loanDlg(cid,cdat){const d=$('#dlg'),sc=CL.sols.find(x=>x.id===cid),c=(sc&&sc.datos)||cdat||{};
+  d.innerHTML=`<h2>Proponer préstamo · ${esc(c.nombre)}</h2><p class="note">El administrador revisa la propuesta. Si la aprueba, el préstamo empieza ese día.</p><form id="cpf"><label>Monto prestado ($)<input name="monto" type="number" min="1" step="any" required></label><label class="pct"><span>Porcentaje de interés (% por mes)</span><input name="tasa" type="number" min="0" step="0.01" value="10" required></label><label>Tipo de interés<select name="metodo"><option value="simple">Simple sobre el capital</option><option value="saldo">Sobre saldo (cuota fija)</option></select></label><label>Número de cuotas<input name="n" type="number" min="1" step="1" value="4" required></label><label>Frecuencia de pago<select name="freq">${Object.entries(FN).map(([k,v])=>`<option value="${k}" ${k==='m'?'selected':''}>${v}</option>`).join('')}</select></label><label>Interés por mora (% por mes)<input name="mora" type="number" min="0" step="0.01" value="0"></label><label class="full">Observaciones<textarea name="obs" rows="2"></textarea></label><label class="full">Mensaje opcional para el cliente (se agrega a los avisos de WhatsApp)<textarea name="msg" rows="2"></textarea></label><div class="full prev" id="cpv"></div><div class="full"><button class="btn">Enviar propuesta</button> <button type="button" class="btn ghost" id="cpx">Cancelar</button></div></form>`;
+  const f=$('#cpf'),pv=()=>{const p=Object.fromEntries(new FormData(f)),r=calc({...p,fecha:today()});$('#cpv').innerHTML=r.length?`Cuota: <b>${fmt(r[0].tot)}</b> · Interés total: <b>${fmt(r.reduce((a,x)=>a+x.int,0))}</b> · Total a pagar: <b>${fmt(r.reduce((a,x)=>a+x.tot,0))}</b>`:'Completa monto y cuotas para ver el cálculo.'};
+  f.oninput=pv;pv();$('#cpx').onclick=()=>d.close();
+  f.onsubmit=async ev=>{ev.preventDefault();const p=Object.fromEntries(new FormData(f)),b=f.querySelector('button');if(!confirm('¿Enviar propuesta de '+fmt(p.monto)+' para '+(c.nombre||'')+'?'))return;b.disabled=true;b.textContent='Enviando…';
+    const datos={cref:cid,cliente:{nombre:c.nombre||'',tel:c.tel||'',doc:c.doc||'',dir:c.dir||'',nota:c.nota||''},monto:+p.monto,tasa:+p.tasa,metodo:p.metodo,n:+p.n,freq:p.freq,mora:+p.mora||0,obs:p.obs||'',msg:p.msg||''};
+    try{const k=CL.fb;await withTO(k.fs.addDoc(k.fs.collection(k.db,'solicitudes'),{tipo:'prestamo',estado:'pendiente',por:CL.user.uid,porNombre:CL.prof.nombre||CL.user.email,ts:Date.now(),datos}));d.close();toast('Propuesta enviada. Quedó pendiente de aprobación.')}
+    catch(e){alert(fbErr(e)+'\nRevisa «Mis envíos» antes de reintentar, por si se alcanzó a enviar.');b.disabled=false;b.textContent='Enviar propuesta'}};
+  if(!d.open)d.showModal()}
+function envios(){$('#v').innerHTML=`<div class="card"><h2>Mis envíos</h2><p class="note">${CL.role==='cob'?'Sesión: '+esc(CL.prof.nombre||CL.user.email)+' · <a class="lk" id="clo">Cerrar sesión</a>':'Conectando con la nube…'}</p><div id="enl"></div></div>`;const o=$('#clo');if(o)o.onclick=cloudOut;drawEn()}
+function drawEn(){const el=$('#enl');if(!el)return;const o=$('#clo');if(!o&&CL.role==='cob'){envios();return}
+  el.innerHTML=CL.sols.length?CL.sols.map(s=>{const st=ST[s.estado]||['',''],t=s.tipo==='cliente'?'👤 Cliente':'💵 Préstamo',w=s.ts?fdate(isoL(s.ts))+' · '+ftime(s.ts):'';return`<div class="row"><div><b>${t}</b><i class="tg ${st[1]}">${st[0]}</i><small>${esc(solDesc(s))}</small><small>${w}${s.estado==='aprobada'&&s.loanCode?' · Código '+esc(s.loanCode):''}${s.motivo?' · Motivo: '+esc(s.motivo):''}</small></div></div>`}).join(''):'<p class="empty">Aún no has enviado nada.</p>'}
+
 document.addEventListener('input',e=>{if(e.target.id==='biz'){S.biz=e.target.value;save()}});
 boot();
 </script>
